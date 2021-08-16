@@ -30,24 +30,18 @@ class CurrencySelector extends React.Component {
   }
 }
 
-function tryConvert(money, convert) {
-  const input = parseFloat(money);
-  if (Number.isNaN(input)) {
-    return '';
-  }
-  const output = convert(input);
-  const rounded = Math.round(output * 1000) / 1000;
-  return rounded.toString();
+function toMoney1(money = 0, course) {
+  console.log('course 1: ', course);
+  return Math.round(money * course * 100) / 100
 }
 
-function toMoney1(money) {
-  console.log('money1: ', money);
-  return money * 490;
+function toMoney2(money = 0, course) {
+  console.log('course 2: ', course);
+  return Math.round(money / course * 100) / 100;
 }
 
-function toMoney2(money) {
-  console.log('money2: ', money);
-  return money / 490;
+function calcCourse(curr1, curr2) {
+  return Math.round(curr1 / curr2 * 100) / 100;
 }
 
 class ExchangeInput extends React.Component {
@@ -94,7 +88,7 @@ export class Calculator extends React.Component {
         USDRUB: 0,
         USDGBP: 0,
         USDUSD: 0
-      }, quote: 'AMD'};
+      }, quote1: 'AMD', quote2: 'AMD'};
   }
 
   componentDidMount() {
@@ -111,41 +105,58 @@ export class Calculator extends React.Component {
   }
 
   handleCurrencyChange1(quote) {
-    // this.setState({quote});
+    return this.setState({ quote1: quote });
   }
 
   handleCurrencyChange2(quote) {
-    // this.setState({quote});
+    return this.setState({ quote2: quote });
   }
 
   handleExchangeMoney1(money) {
-    this.setState({quote: 'USD', money});
+    this.setState({quote1: this.state.quote1, money});
   }
 
   handleExchangeMoney2(money) {
-    this.setState({quote: 'AMD', money});
+    this.setState({quote2: this.state.quote2, money});
   }
 
   render() {
-    const quote = this.state.quote;
+    const quote1 = this.state.quote1;
+    const quote2 = this.state.quote2;
     const money = this.state.money;
-    console.log(quote);
+    const course1 = this.state.currency['USD' + quote1];
+    const course2 = this.state.currency['USD' + quote2];
+
+    console.log(quote1);
+    console.log(quote2);
+    console.log(course2);
+    console.log(course2);
     console.log(money);
 
-    let AMD = quote === 'AMD' ? tryConvert(money, toMoney1) : money;
+    // let input1 = toMoney1(money, calcCourse(course1, course2)) ?? money;
+    //
+    // let input2 = toMoney2(money, calcCourse(course2, course1)) ?? money;
+    let input1 = money;
 
-    let USD = quote === 'USD' ? tryConvert(money, toMoney2) : money;
+    let input2 = money
+
+    console.log(input1);
+    console.log(input2);
+    console.log(toMoney1(money, calcCourse(course1, course2)));
+    console.log(toMoney2(money, calcCourse(course2, course1)));
+
+    console.log(this.state);
 
     return (
       <div style={{margin: '50px', display: 'flex', justifyContent: 'space-between'}}>
         <ExchangeInput
-          quote='AMD'
-          money={AMD}
+          quote={quote1}
+          money={input1}
           onExchangeMoney={this.handleExchangeMoney1}
           onCurrencyChange={this.handleCurrencyChange1}/>
         <ExchangeInput
-          quote='USD'
-          money={USD}
+          quote={quote2}
+          money={input2}
           onExchangeMoney={this.handleExchangeMoney2}
           onCurrencyChange={this.handleCurrencyChange2}/>
       </div>
