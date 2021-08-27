@@ -3,7 +3,7 @@ import React from "react";
 class CurrencySelector extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { quote: '' };
+    this.state = {quote: ''};
 
     this.handleChange = this.handleChange.bind(this);
   }
@@ -30,18 +30,12 @@ class CurrencySelector extends React.Component {
   }
 }
 
-function toMoney1(money = 0, course) {
-  console.log('course 1: ', course);
+function toMoney(money = 0, course) {
   return Math.round(money * course * 100) / 100
 }
 
-function toMoney2(money = 0, course) {
-  console.log('course 2: ', course);
-  return Math.round(money / course * 100) / 100;
-}
-
 function calcCourse(curr1, curr2) {
-  return Math.round(curr1 / curr2 * 100) / 100;
+  return curr1 / curr2;
 }
 
 class ExchangeInput extends React.Component {
@@ -67,8 +61,9 @@ class ExchangeInput extends React.Component {
       <fieldset>
         <CurrencySelector onCurrencyChange={this.selectCurrency}/>
         <legend>Выберите вашу валюту: {quote}</legend>
-        <input value={money}
-               onChange={this.handleChange} />
+        <input
+          value={money}
+          onChange={this.handleChange}/>
       </fieldset>
     );
   }
@@ -82,13 +77,16 @@ export class Calculator extends React.Component {
     this.handleExchangeMoney1 = this.handleExchangeMoney1.bind(this);
     this.handleExchangeMoney2 = this.handleExchangeMoney2.bind(this);
     this.getCurrency = this.getCurrency.bind(this);
-    this.state = { money: 0, currency: {
+
+    this.state = {
+      money1: 0, money2: 0, currency: {
         USDAMD: 0,
         USDEUR: 0,
         USDRUB: 0,
         USDGBP: 0,
         USDUSD: 0
-      }, quote1: 'AMD', quote2: 'AMD'};
+      }, quote1: 'AMD', quote2: 'AMD', course1: 0, course2: 0
+    };
   }
 
   componentDidMount() {
@@ -105,45 +103,39 @@ export class Calculator extends React.Component {
   }
 
   handleCurrencyChange1(quote) {
-    return this.setState({ quote1: quote });
+    return this.setState({quote1: quote});
   }
 
   handleCurrencyChange2(quote) {
-    return this.setState({ quote2: quote });
+    return this.setState({quote2: quote});
   }
 
   handleExchangeMoney1(money) {
-    this.setState({quote1: this.state.quote1, money});
+    this.setState({money1: money});
   }
 
   handleExchangeMoney2(money) {
-    this.setState({quote2: this.state.quote2, money});
+    this.setState({money2: money});
   }
 
   render() {
     const quote1 = this.state.quote1;
     const quote2 = this.state.quote2;
-    const money = this.state.money;
+    const money1 = this.state.money1;
+    const money2 = this.state.money2;
     const course1 = this.state.currency['USD' + quote1];
     const course2 = this.state.currency['USD' + quote2];
 
-    console.log(quote1);
-    console.log(quote2);
-    console.log(course2);
-    console.log(course2);
-    console.log(money);
+    let input1, input2
 
-    // let input1 = toMoney1(money, calcCourse(course1, course2)) ?? money;
-    //
-    // let input2 = toMoney2(money, calcCourse(course2, course1)) ?? money;
-    let input1 = money;
+    if (money1) {
+      input2 = toMoney(money1, calcCourse(course2, course1)) ?? money1;
+    } else if (money2) {
+      input1 = toMoney(money2, calcCourse(course1, course2)) ?? money2;
+    }
 
-    let input2 = money
-
-    console.log(input1);
-    console.log(input2);
-    console.log(toMoney1(money, calcCourse(course1, course2)));
-    console.log(toMoney2(money, calcCourse(course2, course1)));
+    console.log('input1 :', input1);
+    console.log('input2: ', input2);
 
     console.log(this.state);
 
