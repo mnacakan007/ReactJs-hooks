@@ -1,7 +1,6 @@
 import React from "react";
 import mainLogo from '../assets/324014-200.png';
 import ExchangeInput from "./ExchangeInput";
-import getCurrency from "./getCurrency";
 
 function toMoney(money = 0, course) {
   if (!money) {
@@ -14,13 +13,14 @@ function calcCourse(curr1, curr2) {
   return curr1 / curr2;
 }
 
-export class Calculator extends React.Component {
+export class Exchange extends React.Component {
   constructor(props) {
     super(props);
     this.handleCurrencyChange1 = this.handleCurrencyChange1.bind(this);
     this.handleCurrencyChange2 = this.handleCurrencyChange2.bind(this);
     this.handleExchangeMoney1 = this.handleExchangeMoney1.bind(this);
     this.handleExchangeMoney2 = this.handleExchangeMoney2.bind(this);
+    this.getCurrency = this.getCurrency.bind(this);
 
     this.state = {
       money1: 0,
@@ -49,12 +49,21 @@ export class Calculator extends React.Component {
     this.getCurrency();
   }
 
+  getCurrency() {
+    fetch('http://apilayer.net/api/live?access_key=2b1b329fd66a5a8e48d84dd8d0d03fba&currencies=EUR,GBP,RUB,AMD,USD&source=USD&format=1')
+      .then(response => response.json())
+      .then(currency => {
+        this.setState({currency: currency.quotes});
+        console.log(this.state);
+      })
+  }
+
   handleCurrencyChange1(quote) {
-    return this.setState({quote1: quote});
+    this.setState({quote1: quote});
   }
 
   handleCurrencyChange2(quote) {
-    return this.setState({quote2: quote});
+    this.setState({quote2: quote});
   }
 
   handleExchangeMoney1(money) {
@@ -77,9 +86,17 @@ export class Calculator extends React.Component {
 
     let input1, input2
 
+    if (quote1) {
+      console.log('quote1');
+    } else if (quote2) {
+      console.log('quote2');
+    }
+
     if (money1) {
+      console.log('money1');
       input2 = toMoney(money1, calcCourse(course2, course1)) ?? money1;
     } else if (money2) {
+      console.log('money2');
       input1 = toMoney(money2, calcCourse(course1, course2)) ?? money2;
     }
 

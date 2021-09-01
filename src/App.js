@@ -116,11 +116,11 @@
 // export default App
 
 import React from 'react'
-import {Calculator} from "./change/caculator";
+import {Exchange} from "./exchange/Exchange";
 
 function App() {
   return (
-    <Calculator />
+    <Exchange />
   )
 }
 
